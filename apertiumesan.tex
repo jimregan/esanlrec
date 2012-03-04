@@ -1,0 +1,324 @@
+\documentclass[10pt,twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage[small,bf]{caption}
+\title{Free/Open Source Shallow-Transfer Based Machine Translation for Spanish and Aragonese} %I suck at titles
+%\date{}
+\author{Juan Pablo Mart\'inez Cort\'es\\ GTC, I3A, Universidad de Zaragoza \\ {\tt jpmart@unizar.es}
+\and Jim O’Regan\\ Eolaistriu Techonologies \\ {\tt joregan@gmail.com}
+\and Francis Tyers\\ Grup Transducens, DLSI, Universitat d'Alacant \\ {\tt ftyers@dlsi.ua.es}}
+
+
+
+
+
+
+
+
+\begin{document}
+  \maketitle
+  \begin{abstract}
+  This article describes the development of a bidirectional shallow-transfer based machine translation system for Spanish and Aragonese, based on the Apertium platform, reusing the resources provided by other translators built for the platform. The system, and the morphological analyser built for it, are both the first resources of their kind for Aragonese. %The morphological analyser has coverage of over 80\%, while the machine translation system itself approaches quality suitable for post-editing.
+  \end{abstract}
+  
+  \section{Introduction}
+%  Language technology is becoming increasingly pervasive in modern computing environments; writing technologies in particular, such as spellcheckers, are seen as essential tools. Due to both commercial services, such as Google Translate and Microsoft Translator; and open source software, such as Apertium~\cite{Forcada} and Moses, machine translation is more widely available than ever before.
+
+
+
+
+
+
+
+
+  %BEGIN Juan Pablo
+  Aragonese is a Romance language spoken in the northern area of Aragon (the southern flank of the central Pyrenees) by a population of about 10,000 speakers and an indeterminate number of second-language speakers. 
+  Although historically spoken in almost all Aragon, it has suffered a constant decline and progressive substitution by Spanish since the 15th century. 
+  In recent decades, the number of native speakers has dramatically decreased due to lack of intergenerational transmission. 
+  In most areas, only older people use the language. 
+  In contrast, there is a certain interest among young and mid-age people to learn Aragonese even in areas where the language is already lost as a native language. Recently, Aragonese has been legally recognised,\footnote{Under the so-called ``Act on Aragon Languages'', speakers achieved a minimal legal recognition. However, the Act, which established a language regulating body (Academy) and voluntary classes at all educative levels in the regions where the language is still natively spoken, has hardly been developed.} together with Catalan, with a status of ``lenguas propias e históricas de Aragón'',\footnote{``Native and historical languages of Aragon''} and as one of the languages of application of the European Charter for Regional or Minority Languages in Spain. 
+  Because of the low number of speakers and its difficult sociolinguistic situation, it is one of the language with the lowest vitality in southwestern Europe, and one of those with fewer resources and opportunities for the future. 
+  UNESCO considers Aragonese a ``definitely endangered'' language~\cite{UNESCO}.
+
+
+
+
+
+
+
+
+  Although the language is fragmented into several historical dialects, a loosely-defined and still evolving compositional standard\footnote{A standard language, composed from all of the dialects} has been outlined in the last thirty years \cite{Berceo,Metzeltin,EFA}. However, the absence of official normalisation and lack of language teaching favours the profusion of language models, which can hinder the identification of the speakers themselves with the different models~\cite{Paricio}. %Even at the orthographic level, at least three spelling systems have been defined to write standard and dialectal Aragonese. This is, of course, a complication for developing tools for the language. 
+
+
+
+
+
+
+
+
+  In the development of the Spanish-Aragonese language pair translator, we have selected the 2010 Orthographic Proposal of the ``Academia de l'Aragonés''~\cite{EFA}. Though it has not reached full consensus, it is the most widely used standard in the generation of new on-line content in Aragonese (Wikipedia, \url{http://www.arredol.com}), and is predominant among active online users (blogs, twitter). Moreover, other linguistic tools, such as a spellchecker, are being developed using this spelling system. % On the other hand, we have tried to be more inclusive when translating from Aragonese into Spanish: the aim is that the system is able to analyze all dialectal morpho-lexical variation and, to a lesser extent, orthographic variations.
+  %END JuanPablo
+  
+%  The applications of machine translation can be considered to belong to two broad categories: {\em assimilation}, or understanding the meaning of text; and {\em dissemination}, or preparing text for publication. 
+  %I assume I can say they have a high level of mutual intelligibility - I don't speak Spanish, but *I* could read Aragonese :D JP: Yes, you can sey so. On one hand there must be no monolingual Aragonese speakers left. Also, any Spanish speaker will find written Aragonese easy to understand, when not using specialized vocabulary of the traditional world (agricultural, weather, etc). Still, I can imagine monolingual close-minded only-Spanish speakers claiming that they do not understand Aragonese, and apart from that, I can also imagine people interested in the language using this translator just to understand a few words they do not get in a longer text.
+%  As there is a high degree of mutual intelligibility between Spanish and Aragonese, our ultimate aim is to produce a system useful for dissemination. 
+
+
+
+
+
+
+
+
+  The rest of this article is outlined as follows: first, we describe the development of the system, and the resources used and created; we then describe the status of the system, describing the coverage of the morphological analyser, and an evaluation of the translator for the purpose of post-editing; finally, we describe future work for the improvement of the system.
+  
+  \section{Development}
+  
+  The system is based on the Apertium platform; a Free/Open Source platform for shallow transfer machine translation. The platform was originally designed for the Romance languages of Spain, so no deviation from the usual design of an Apertium-based translator was required. As well as the platform, the linguistic data of the translators are also available under the terms of the GNU General Public License.
+  
+  Development to date has consisted of two phases: the first for assimilation, from Aragonese to Spanish, to be used as a tool in preparing the second phase; the second phase, to extend coverage, to make the system bidirectional, adding a module for orthographical operations (such as contractions), and to ensure adherence to the orthographical standard. Development took place in short bursts over the course of two years: 3 weeks for the first phase, 7 weeks for the second. Both versions of the system are available for download at the Apertium development site.\footnote{\url{http://sourceforge.net/projects/apertium/files/apertium-es-an/}}
+
+  \subsection{Resources}
+  
+  We were able to reuse several resources provided by various Apertium translators in the creation of this package. The Spanish monolingual data, and most of the transfer rules, were taken from the Spanish-Catalan package with minimal changes. 
+  %In place of a tagger definition for Aragonese, we reused the Galician data from the Spanish-Galician package.\footnote{Galician shares the same ambiguity in its singular articles, {\em a} and {\em o}, which, because of their frequency, were the most problematic ambiguity for Aragonese not shared by Spanish.}
+  
+% Umm, I was almost sure that you had used the catalan tagger from ca-es...
+  
+  For Aragonese, there were few resources. The English edition of Wiktionary provided conjugations for some model verbs, from which we were able to build initial inflection paradigms. We used the Aragonese Wikipedia as a source of frequency lists, to guide the development of the morphological analyser.
+  
+  During the initial phase of development, the Aragonese Wikipedia was in the process of switching to the new orthographical standard. Articles conforming to the standard were added to their own category, which we were able to use, via Mediawiki's export function, to create a subcorpus of standardised words. The standard orthography is now the norm on Wikipedia, and this category has been superceded by categories for articles written in each of nine dialects.
+  
+  In lieu of a parallel corpus,\footnote{The text of ``Ley d'Uso, Protección y Promoción d'as Luengas d'Aragón'' became available towards the end of the first phase, though too late to be used. We chose not to use it in the second phase, to have genuine parallel text to use in evaluation.} we used comparable material obtained by manually extracting the first sentences from a number of articles which had versions in both the Aragonese and Spanish editions of Wikipedia. In many cases, these were close enough to function as parallel sentences (see table~\ref{tab:comp}); in others, they contained at least phrases that were useful for testing purposes.
+
+
+
+
+
+
+
+
+  \begin{table}
+  \begin{center}
+  \caption{Example first sentences from the Wikipedia articles ``Mar''.\label{tab:comp}}
+  \begin{tabular}{r p{5cm}}
+     es & Un mar es una masa de agua salada de tamaño inferior al océano \\
+     an & A mar u o mar ye una masa d'augua salada de grandaria inferior a l'ocián \\
+        & {\em A sea is a body of salt water smaller than an ocean}\\
+  \end{tabular}
+  \end{center}
+  \end{table}
+  
+  \subsection{Dictionaries}
+  
+  The Aragonese morphological dictionary and the Spanish-Aragonese bilingual dictionary were created in a synchronous manner. Closed categories (prepositions, determiners, numerals) were manually added first, along with a few examples of cognates from the open categories. These cognates were used to build a set of common transformations, both for normalisation of non-standard forms, and for cognate induction; and to build a set of equivalent suffixes, which, as well as functioning as transformations, also served as a means of filtering words for equivalence, and for assigning categories: for example, {\em -dá,  -dat, daz} and {\em -datz} all refer to the same feminine noun ({\em -dat, -datz} in the standard orthography), which typically have cognates with the suffix {\em -dad, -dades} in Spanish: for example, ({\em uniformidat, uniformidatz} (``uniformity’’, ``uniformities’’) in Aragonese, {\em uniformidad, uniformidades} in Spanish.
+
+
+
+
+
+
+
+
+  %Cognate induction was then performed as for the Apertium Czech-Polish system \cite{Ruth}, 
+  Cognate induction was then performed by filtering words by suffix, applying the extracted transformations, and comparing the result with a filtered list of lemmas extracted from the Spanish analyser. In an additional step, the process was repeated to find a normalisation candidate, using the subcorpus of standardised Aragonese, where possible, or the most frequent form otherwise.
+  
+  \begin{table}
+  \begin{center}
+  \caption{Comparison of dictionaries.\label{tab:phases}}
+  \begin{tabular}{|r|c|c|}
+  \hline
+    & 0.1 & 0.2 \\
+  \hline
+  Lemmas (bil) & 8598  & 23597 \\
+  \hline
+  Lemmas (mon) & 8773  & 22748\\
+  Paradigms    & 119   & 517  \\
+  %\hline
+  %Surface      & 67871 &      \\
+  \hline
+  \end{tabular}
+  \end{center}
+  \end{table}
+  
+  In comparing the words contained in the first version of the dictionary with the corrected version, we find a difference of 14\%, split into 7.4\% normalisation errors (non-standard version selected), and 6.6\% outright errors (including misspelled words, non-Aragonese words, and incorrect Part of Speech). A further 0.6\% of the remainder (0.52\% of total) were due to cognate induction errors (false friends).
+  
+  \section{Status}
+  
+  \subsection{Coverage}
+  
+  Lexical coverage is an important factor in Machine Translation, because of the effect that unknown words can have in the translation produced: as well as the word itself potentially not being translated correctly, the lack of concordance caused by not knowing the features of that word (such as gender and number) can lead to generation errors in the words which are required to agree with it grammatically.
+  
+We calculated the naïve coverage (the proportion of words which received at least one analysis) of the analyser, using Aragonese Wikipedia\footnote{Specifically, \url{http://download.wikimedia.org/anwiki/20111007/anwiki-20111007-pages-articles.xml.bz2}} as a corpus. Naïve coverage of the analyser on Wikipedia is 87.67\% (over 3,648,449 words).  In a corpus consisting of three short novels, naïve coverage is 92.15\% (over 138,355 words).
+  
+  \subsection{Evaluation}
+  
+  To evaluate the translator, we used the text of ``Ley d'Uso, Protección y Promoción d'as Luengas d'Aragón'':\footnote{\url{http://www.academiadelaragones.org/biblio/LEI\%20DE\%20LUENGAS\%20D'ARAGON.pdf}} 5389 words of Aragonese, 5884 of Spanish.
+  
+  As our aim is to produce a system suitable for post-editing, we chose to evaluate using \emph{word error rate} (WER). WER is calculated based on the number of changes required to change the machine translated output into the reference text, which is a good indicator of the amount of work that will be required in post-editing.
+  
+  We provide two figures for WER, both without unknown word marks (``WER''), and with (``WER$_2$''), because of the high number of unknown words identical in source and target (which do not require editing themselves, but may potentially lead to agreement or structural errors elsewhere).
+  
+  \begin{table*}
+  \centering
+  \begin{tabular}{|l|c|c|c|c|}
+  \hline
+  Direction    & WER & WER$_2$ & Unknowns & Free Rides\\
+  \hline
+  es--an        & 16.83 \% & 19.37 \%  & 4.78 \% & 53.10 \% \\
+  an--es        & 11.61 \% & 14.12 \%  & 5.67 \% & 44.05 \% \\
+  \hline
+  \end{tabular}
+    \caption{Evaluation results for both directions. Free rides are those unknown words which
+       are identical in both the source and target language. Although they do not cause
+       a degradation in translation quality, it is relevant to take them into account when
+       evaluating the system. Unknown words are included as an indication of naïve coverage
+       over the test sets.
+       For brevity, we refer to the languages by their ISO 639-1 codes: {\tt es} for Spanish, and {\tt an} for Aragonese.}
+    \label{table:quanteval}
+  \end{table*}
+  
+  The disparity between the es--an and an--es results can, in large part, be attributed to the looseness of Aragonese standard and, specifically, to different choices of definite articles. The standard permits some variation, such as ``o'' / ``lo''  or ``a'l'' / ``a o'', which is counted as an error of two words.
+  
+  \section{Future Work}
+  
+  It is intended to continue to develop and maintain the system, to both extend the coverage of the lexicons and to improve the quality of the translations.
+  
+  The Apertium Nynorsk and Bokmål system~\cite{Unhammer} utilised feedback from Wikipedia\footnote{The Nynorsk Wikipedia has a category for articles derived from Apertium translations: {\small \url{http://nn.wikipedia.org/wiki/Kategori:Omsett_med_Apertium}}} in developing the system. We have received positive feedback from editors of the Aragonese Wikipedia, which we hope will lead to the availability of post-edited translations we can use to extend the system. 
+  %To that end, we have begun work on an improved version of the ``stupid aligner'' used to develop the Apertium Czech to Polish system~\cite{Ruth}.
+  
+  The morphological analyser contains some support for dialectal forms. We hope to extend this, and to enable generation of these forms. Independent of this, we feel that a translation-less mode of the system could be useful as a tool for standardising Aragonese text.
+  
+  The list of standardised forms from the analyser has been contributed to an effort to create a spell-checking dictionary for Aragonese\footnote{\url{https://addons.mozilla.org/es-ES/firefox/addon/corrector-ortografico-aragones/}}. We hope that feedback obtained from this collaboration will contribute towards the extension of the system.
+
+
+
+
+
+
+
+
+  
+  \begin{thebibliography}{}
+  
+  \bibitem{Berceo}
+  Berceo, R.
+  \newblock 2003. 
+  \newblock Normativisation, a priority for Aragonese.
+  \newblock {\em I Mercator International Symposium on Minority Languages and Research}
+  \newblock \url{http://www.aber.ac.uk/mercator/images/Bercero.pdf}
+
+
+
+
+
+
+
+
+  \bibitem{Metzeltin}
+  Metzeltin, M.
+  \newblock 2004. 
+  \newblock Las lenguas románicas estándar. Historia de su formación y de su uso.
+  \newblock {\em Academia de la Llingua Asturiana.}
+
+
+
+ \bibitem{EFA}
+ Academia de l'Aragonés -- Estudio de Filolochía Aragonesa
+ \newblock 2010. 
+ \newblock Propuesta ortográfica de l'Academia del Aragonés.
+ \newblock {\em Edicions Dichitals de l'Academia de l'Aragonés.}
+ \newblock \url{http://www.academiadelaragones.org/biblio/EDACAR7_2.pdf}
+
+
+  \bibitem{UNESCO}
+  UNESCO.
+  \newblock 2009. 
+  \newblock Interactive World Atlas of Endangered Languages.
+  \newblock \url{http://www.unesco.org/culture/ich/index.php?pg=00206}
+
+
+
+
+
+
+
+
+  \bibitem{Forcada}
+  Forcada, Mikel L.; Ginestí-Rosell, Mireia; Nordfalk, Jacob; O'Regan, Jim; Ortiz-Rojas, Sergio; Pérez-Ortiz, Juan Antonio; Sánchez-Martínez, Felipe; Ramírez-Sánchez, Gema; Tyers. Francis M.
+  \newblock 2011. 
+  \newblock Apertium: a free/open-source platform for rule-based machine translation.
+  \newblock {\em Machine Translation (Special Issue on Free/Open-Source Machine Translation).}
+
+
+
+
+
+
+
+
+%  \bibitem{Levenshtein}
+%  Levenshtein, Vladimir.
+%  \newblock 1965. 
+%  \newblock Binary codes capable of correcting deletions, insertions, and reversals.
+%  \newblock {\em Doklady Akademii Nauk SSSR}
+%  \newblock 845--848.
+
+
+
+
+
+
+
+
+  \bibitem{Unhammer}
+  Unhammer, Kevin; Trosterud, Trond.
+  \newblock 2009. 
+  \newblock Reuse of free resources in machine translation between Nynorsk and Bokmål.
+  \newblock {\em Proceedings of the First International Workshop on Free/Open-Source Rule-Based Machine Translation}
+  \newblock 35--42.
+
+
+
+
+  \bibitem{Paricio}
+  Paricio, Santiago; Martínez, Juan Pablo
+  \newblock 2010. 
+  \newblock New ways of revitalization for minority languages: the impact of the internet in the case of Aragonese.
+  \newblock {\em Digithum, no. 12.}
+  \url{http://www.uoc.edu/ojs/index.php/digithum/article/download/n12-paricio-martinez/n12-paricio-martinez-eng}
+
+
+
+%  \bibitem{Ruth}
+%  Ruth, Joanna; O'Regan, Jim.
+%  \newblock 2011. 
+%  \newblock Shallow-transfer rule-based machine translation from Czech to Polish.
+%  \newblock {\em Proceedings of the Second International Workshop on Free/Open-Source Rule-Based Machine Translation}
+%  \newblock 69--76.
+ 
+\end{thebibliography}
+  
+\end{document}
+
+
+
+
+%[a]mikel.forcada:
+%I am making very small typographical changes etc. silently; the remaining stuff will go in comments
+%[b]mikel.forcada:
+%Add "free/open source" to the title?
+%[c]mikel.forcada:
+%Emphasize, with one sentence somewhere, that you are generating resources (the R in LREC) that may be reused somewhere.
+%[d]mikel.forcada:
+%with lower vitality or with the lowest vitality?
+%[e]mikel.forcada:
+%Shouldn't you explain what compositional means?
+%[f]mikel.forcada:
+%Free/open-source etc.
+%[g]mikel.forcada:
+%I would give an example of a noun ending in -datz in an and in -dad in Spanish.
+%[h]mikel.forcada:
+%Make sure the abbreviations an and es have been introduced conveniently before they are used.
+
