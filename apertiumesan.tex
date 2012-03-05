@@ -36,7 +36,7 @@ This article describes the development of a bidirectional shallow-transfer based
   
   \section{Development}
   
-  The system is based on the Apertium platform; a Free/Open Source platform for shallow transfer machine translation. The platform was originally designed for the Romance languages of Spain, so no deviation from the usual design of an Apertium-based translator was required. As well as the platform, the linguistic data of the translators are also available under the terms of the GNU General Public License.
+  The system is based on the Apertium platform~\cite{Forcada}; a Free/Open Source platform for shallow transfer machine translation. The platform was originally designed for the Romance languages of Spain, so no deviation from the usual design of an Apertium-based translator was required. As well as the platform, the linguistic data of the translators are also available under the terms of the GNU General Public License.
   
   Development to date has consisted of two phases: the first for assimilation, from Aragonese to Spanish, to be used as a tool in preparing the second phase; the second phase, to extend coverage, to make the system bidirectional, adding a module for orthographical operations (such as contractions), and to ensure adherence to the orthographical standard. Development took place in short bursts over the course of two years: 3 weeks for the first phase, 7 weeks for the second. Both versions of the system are available for download at the Apertium development site.\footnote{\url{http://sourceforge.net/projects/apertium/files/apertium-es-an/}}
 
@@ -66,7 +66,6 @@ This article describes the development of a bidirectional shallow-transfer based
   
   The Aragonese morphological dictionary and the Spanish-Aragonese bilingual dictionary were created in a synchronous manner. Closed categories (prepositions, determiners, numerals) were manually added first, along with a few examples of cognates from the open categories. These cognates were used to build a set of common transformations, both for normalisation of non-standard forms, and for cognate induction; and to build a set of equivalent suffixes, which, as well as functioning as transformations, also served as a means of filtering words for equivalence, and for assigning categories: for example, {\em -dá,  -dat, daz} and {\em -datz} all refer to the same feminine noun ({\em -dat, -datz} in the standard orthography), which typically have cognates with the suffix {\em -dad, -dades} in Spanish: for example, ({\em uniformidat, uniformidatz} (``uniformity’’, ``uniformities’’) in Aragonese, {\em uniformidad, uniformidades} in Spanish.
 
-  %Cognate induction was then performed as for the Apertium Czech-Polish system \cite{Ruth}, 
   Cognate induction was then performed by filtering words by suffix, applying the extracted transformations, and comparing the result with a filtered list of lemmas extracted from the Spanish analyser. In an additional step, the process was repeated to find a normalisation candidate, using the subcorpus of standardised Aragonese, where possible, or the most frequent form otherwise.
   
   \begin{table}
