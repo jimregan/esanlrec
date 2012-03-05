@@ -136,20 +136,6 @@ This article describes the development of a bidirectional shallow-transfer based
   
   \section{Status}
   
-  \subsection{Coverage}
-  
-  Lexical coverage is an important factor in Machine Translation, because of the effect that unknown words can have in the translation produced: as well as the word itself potentially not being translated correctly, the lack of concordance caused by not knowing the features of that word (such as gender and number) can lead to generation errors in the words which are required to agree with it grammatically.
-  
-We calculated the naïve coverage (the proportion of words which received at least one analysis) of the analyser, using Aragonese Wikipedia\footnote{Specifically, \url{http://download.wikimedia.org/anwiki/20111007/anwiki-20111007-pages-articles.xml.bz2}} as a corpus. Naïve coverage of the analyser on Wikipedia is 87.67\% (over 3,648,449 words).  In a corpus consisting of three short novels, naïve coverage is 92.15\% (over 138,355 words).
-  
-  \subsection{Evaluation}
-  
-  To evaluate the translator, we used the text of ``Ley d'Uso, Protección y Promoción d'as Luengas d'Aragón'':\footnote{\url{http://www.academiadelaragones.org/biblio/LEI\%20DE\%20LUENGAS\%20D'ARAGON.pdf}} 5389 words of Aragonese, 5884 of Spanish.
-  
-  As our aim is to produce a system suitable for post-editing, we chose to evaluate using \emph{word error rate} (WER). WER is calculated based on the number of changes required to change the machine translated output into the reference text, which is a good indicator of the amount of work that will be required in post-editing.
-  
-  We provide two figures for WER, both without unknown word marks (``WER''), and with (``WER$_2$''), because of the high number of unknown words identical in source and target (which do not require editing themselves, but may potentially lead to agreement or structural errors elsewhere).
-  
   \begin{table*}
   \centering
   \begin{tabular}{|l|c|c|c|c|}
@@ -168,6 +154,20 @@ We calculated the naïve coverage (the proportion of words which received at lea
        For brevity, we refer to the languages by their ISO 639-1 codes: {\tt es} for Spanish, and {\tt an} for Aragonese.}
     \label{table:quanteval}
   \end{table*}
+  
+  \subsection{Coverage}
+  
+  Lexical coverage is an important factor in Machine Translation, because of the effect that unknown words can have in the translation produced: as well as the word itself potentially not being translated correctly, the lack of concordance caused by not knowing the features of that word (such as gender and number) can lead to generation errors in the words which are required to agree with it grammatically.
+  
+We calculated the naïve coverage (the proportion of words which received at least one analysis) of the analyser, using Aragonese Wikipedia\footnote{Specifically, \url{http://download.wikimedia.org/anwiki/20111007/anwiki-20111007-pages-articles.xml.bz2}} as a corpus. Naïve coverage of the analyser on Wikipedia is 87.67\% (over 3,648,449 words).  In a corpus consisting of three short novels, naïve coverage is 92.15\% (over 138,355 words).
+  
+  \subsection{Evaluation}
+  
+  To evaluate the translator, we used the text of ``Ley d'Uso, Protección y Promoción d'as Luengas d'Aragón'':\footnote{\url{http://www.academiadelaragones.org/biblio/LEI\%20DE\%20LUENGAS\%20D'ARAGON.pdf}} 5389 words of Aragonese, 5884 of Spanish.
+  
+  As our aim is to produce a system suitable for post-editing, we chose to evaluate using \emph{word error rate} (WER). WER is calculated based on the number of changes required to change the machine translated output into the reference text, which is a good indicator of the amount of work that will be required in post-editing.
+  
+  We provide two figures for WER, both without unknown word marks (``WER''), and with (``WER$_2$''), because of the high number of unknown words identical in source and target (which do not require editing themselves, but may potentially lead to agreement or structural errors elsewhere).
   
   The disparity between the es--an and an--es results can, in large part, be attributed to the looseness of Aragonese standard and, specifically, to different choices of definite articles. The standard permits some variation, such as ``o'' / ``lo''  or ``a'l'' / ``a o'', which is counted as an error of two words.
   
