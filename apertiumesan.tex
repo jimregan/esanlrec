@@ -15,9 +15,8 @@
 
 \begin{document}
   \maketitle
-  \begin{abstract}
-This article describes the development of a bidirectional shallow-transfer based machine translation system for Spanish and Aragonese, based on the Apertium platform, reusing the resources provided by other translators built for the platform. The system, and the morphological analyser built for it, are both the first resources of their kind for Aragonese. %The morphological analyser has coverage of over 80\%, while the machine translation system itself approaches quality suitable for post-editing.
-  \end{abstract}
+  \abstract{This article describes the development of a bidirectional shallow-transfer based machine translation system for Spanish and Aragonese, based on the Apertium platform, reusing the resources provided by other translators built for the platform. The system, and the morphological analyser built for it, are both the first resources of their kind for Aragonese. %The morphological analyser has coverage of over 80\%, while the machine translation system itself approaches quality suitable for post-editing.
+\Keywords{aragonese, morphological analysis, machine translation}}
   
   \section{Introduction}
   Aragonese is a Romance language spoken in the northern area of Aragon (the southern flank of the central Pyrenees) by a population of about 10,000 speakers and an indeterminate number of second-language speakers. 
@@ -50,6 +49,8 @@ This article describes the development of a bidirectional shallow-transfer based
   During the initial phase of development, the Aragonese Wikipedia was in the process of switching to the new orthographical standard. Articles conforming to the standard were added to their own category, which we were able to use, via Mediawiki's export function, to create a subcorpus of standardised words. The standard orthography is now the norm on Wikipedia, and this category has been superceded by categories for articles written in each of nine dialects.
   
   In lieu of a parallel corpus,\footnote{The text of ``Ley d'Uso, Protección y Promoción d'as Luengas d'Aragón'' became available towards the end of the first phase, though too late to be used. We chose not to use it in the second phase, to have genuine parallel text to use in evaluation.} we used comparable material obtained by manually extracting the first sentences from a number of articles which had versions in both the Aragonese and Spanish editions of Wikipedia. In many cases, these were close enough to function as parallel sentences (see table~\ref{tab:comp}); in others, they contained at least phrases that were useful for testing purposes.
+ 
+  To aid further development in Spanish-Aragonese machine translation, we extracted a set of approx. 16,000 comparable sentences~\footnote{Available from \url{https://github.com/jimregan/es-an-sentences}} using the 'short abstract' properties made available by DBpedia\cite{DBpedia}.
 
 
   \begin{table}
@@ -139,7 +140,7 @@ To that end, we have begun work on an improved version of the ``stupid aligner''
 
   The corpus of sentences from DBpedia requires some further refinement, to be more useful for machine translation. Work has begun on the first stage of this, to create a sentence splitter for Aragonese.
 
-  Work has also begun on adapting DBpedia Spotlight~\cite{spotlight}
+  Work has also begun on adapting DBpedia Spotlight~\cite{spotlight} to both Spanish and Aragonese, concentrating on two aspects: the lexicalisations data, mapping article titles to the phrases used to link to them within the text of Wikipedia; and the indexes themselves, which we use as source of lexical selection rules, by mapping ambiguous words to their Wikipedia article, where available, and analysing the associated paragraph-level context in the index to find phrase-level context. 
 
   \section{Acknowledgements}
 
