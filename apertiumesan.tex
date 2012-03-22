@@ -5,7 +5,8 @@
 %\usepackage{amsmath}
 \usepackage{url}
 \usepackage[small,bf]{caption}
-
+%\usepackage{natbib}
+%\bibliographystyle{plainnat}
 
 \begin{document}
 
@@ -33,7 +34,7 @@ Universitat d'Alacant\\
 
 \abstract{This article describes the development of a bidirectional shallow-transfer based machine translation system for Spanish and Aragonese, based on the Apertium platform, reusing the resources provided by other translators built for the platform. The system, and the morphological analyser built for it, are both the first resources of their kind for Aragonese. 
 The morphological analyser has coverage of over 80\%, and is being reused to create a spelling checker for Aragonese.
-The translator is bidirectional: the Word Error Rate for Spanish to Aragonese is 16.83\%, while Aragonese to Spanish is 11.61\%.\\
+The translator is bidirectional: the Word Error Rate for Spanish to Aragonese is 16.83\%, while Aragonese to Spanish is 11.61\%.%\\
 \Keywords{Aragonese, morphological analysis, machine translation}}
 
 
@@ -51,7 +52,7 @@ The translator is bidirectional: the Word Error Rate for Spanish to Aragonese is
 
   Although the language is fragmented into several historical dialects, a loosely-defined and still evolving compositional standard\footnote{A standard language, composed from all of the dialects} has been outlined in the last thirty years \cite{Berceo,Metzeltin,EFA}. However, the absence of official normalisation and lack of language teaching favours the profusion of language models, which can hinder the identification of the speakers themselves with the different models~\cite{Paricio}. Even at the orthographic level, at least three spelling systems have been defined to write standard and dialectal Aragonese. This is, of course, a complication for developing tools for the language. 
 
-  In the development of the Spanish-Aragonese language pair translator, we have selected the 2010 Orthographic Proposal of the ``Academia de l'Aragonés''~\cite{EFA}. Though it has not reached full consensus, it is the most widely used standard in the generation of new on-line content in Aragonese (Wikipedia, \url{http://www.arredol.com}), and is predominant among active online users (blogs, twitter). Moreover, other linguistic tools, such as a spellchecker, are being developed using this spelling system. % On the other hand, we have tried to be more inclusive when translating from Aragonese into Spanish: the aim is that the system is able to analyse all dialectal morpho-lexical variation and, to a lesser extent, orthographic variations.
+  In the development of the Spanish-Aragonese language pair translator, we have selected the 2010 Orthographic Proposal of the ``Academia de l'Aragonés''~\cite{EFA}. Though it has not reached full consensus, it is the most widely used standard in the generation of new on-line content in Aragonese (Wikipedia, \url{http://www.arredol.com}), and is predominant among active online users (blogs, twitter). Moreover, other linguistic tools, such as a spellchecker, are being developed using this spelling system. On the other hand, we have tried to be more inclusive when translating from Aragonese into Spanish: the aim is that the system is able to analyse as much dialectal morpho-lexical variation as possible, and, to a lesser extent, orthographic variations.
   %END JuanPablo
   
   The rest of this article is outlined as follows: first, we describe the development of the system, and the resources used and created; we then describe the status of the system, describing the coverage of the morphological analyser, and an evaluation of the translator for the purpose of post-editing; finally, we describe future work for the improvement of the system.
@@ -72,7 +73,7 @@ The translator is bidirectional: the Word Error Rate for Spanish to Aragonese is
   
   In lieu of a parallel corpus,\footnote{The text of ``Ley d'Uso, Protección y Promoción d'as Luengas d'Aragón'' became available towards the end of the first phase, though too late to be used. We chose not to use it in the second phase, to have genuine parallel text to use in evaluation.} we used comparable material obtained by manually extracting the first sentences from a number of articles which had versions in both the Aragonese and Spanish editions of Wikipedia. In many cases, these were close enough to function as parallel sentences (see table~\ref{tab:comp}); in others, they contained at least phrases that were useful for testing purposes.
  
-  To aid further development in Spanish-Aragonese machine translation, we extracted a set of approx. 16,000 comparable sentences~\footnote{Available from \url{https://github.com/jimregan/es-an-sentences}} using the 'short abstract' properties made available by DBpedia\cite{DBpedia}.
+  Manual extraction of these sentences was sufficient for our needs, but for future development we wished to automate the process. Rather than duplicate existing work, we chose to reuse data made available by DBpedia\cite{DBpedia}. Although extracting linguistic data is not the primary aim of DBpedia, the ``short abstract'' datasets it provides contain the first paragraph of each article. We loaded the datasets for Spanish and Aragonese\footnote{\url{http://downloads.dbpedia.org/3.7/es/short_abstracts_es.nt.bz2} and \url{http://downloads.dbpedia.org/3.7/an/short_abstracts_an.nt.bz2} for Spanish and Aragonese, respectively.} into a database, and used a simple query (Table \ref{tab:query}) to extract a comparable corpus consisting of the first paragraphs of articles which have an interwiki link to each other. The resulting dataset contains over 16,000 comparable abstracts.~\footnote{Available from \url{https://github.com/jimregan/es-an-sentences}}. An example of a pair of comparable abstracts can be viewed in Table~\ref{tab:dbpedia}.
 
 
   \begin{table}
@@ -86,6 +87,37 @@ The translator is bidirectional: the Word Error Rate for Spanish to Aragonese is
   \end{center}
   \end{table}
   
+  \begin{table}
+  \begin{center}
+  \caption{Example extract from the DBpedia abstract dataset.\label{tab:dbpedia}}
+  \begin{tabular}{r p{5cm}}
+     es & John Joseph Nicholson es un actor, productor, guionista y director de cine estadounidense doce veces nominado y tres veces ganador del Premio de la Academia. En activo como actor desde 1958. \\
+     an & Jack Nicholson (nombre artistico de John Joseph Nicholson) ye un actor y director cinematografico estatounitense, naixito o 22 d'abril de 1937 en Nueva York. \\
+     Gloss es   & {\em John Joseph Nicholson is an actor, producer, screenwriter and director of American cinema twelve times nominated and three times winner of the Academy Award. Active as an actor since 1958.}\\
+     Gloss an   & {\em Jack Nicholson (artistic name of John Joseph Nicholson) is an American actor and director, born 22 April 1937 in New York.}
+  \end{tabular}
+  \end{center}
+  \end{table}
+
+\begin{table}
+\begin{center}
+\caption{SPARQL query used to extract abstracts.\label{tab:query}}
+\begin{small}
+\begin{verbatim}
+PREFIX rdfs: 
+<http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?es, ?an WHERE {
+  ?subject rdfs:comment ?es.
+  ?subject rdfs:comment ?an.
+  FILTER (lang(?es) = "es" 
+       && lang(?an) = "an")
+}
+\end{verbatim}
+\end{small}
+\end{center}
+\end{table}
+
+
   \subsection{Dictionaries}
   
   The Aragonese morphological dictionary and the Spanish-Aragonese bilingual dictionary were created in a synchronous manner. Closed categories (prepositions, determiners, numerals) were manually added first, along with a few examples of cognates from the open categories. These cognates were used to build a set of common transformations, both for normalisation of non-standard forms, and for cognate induction; and to build a set of equivalent suffixes, which, as well as functioning as transformations, also served as a means of filtering words for equivalence, and for assigning categories: for example, {\em -dá,  -dat, daz} and {\em -datz} all refer to the same feminine noun ({\em -dat, -datz} in the standard orthography), which typically have cognates with the suffix {\em -dad, -dades} in Spanish: for example, ({\em uniformidat, uniformidatz} (``uniformity’’, ``uniformities’’) in Aragonese, {\em uniformidad, uniformidades} in Spanish.
@@ -133,6 +165,20 @@ The translator is bidirectional: the Word Error Rate for Spanish to Aragonese is
     \label{table:quanteval}
   \end{table*}
   
+  \begin{table*}
+  \centering
+  \begin{tabular}{|l|c|c|}
+  \hline
+  Direction    & BLEU & BLEU$_2$ \\
+  \hline
+  es--an        & 0.7149 \% & 0.6493 \% \\
+  an--es        & 0.7863 \% & 0.7184 \% \\
+  \hline
+  \end{tabular}
+    \caption{BLEU scores for both directions.}
+    \label{table:bleu}
+  \end{table*}
+
   \subsection{Coverage}
   
   Lexical coverage is an important factor in Machine Translation, because of the effect that unknown words can have in the translation produced: as well as the word itself potentially not being translated correctly, the lack of concordance caused by not knowing the features of that word (such as gender and number) can lead to generation errors in the words which are required to agree with it grammatically.
@@ -145,11 +191,13 @@ We calculated the naïve coverage (the proportion of words which received at lea
   
   As our aim is to produce a system suitable for post-editing, we chose to evaluate using \emph{word error rate} (WER). WER is calculated based on the number of changes required to change the machine translated output into the reference text, which is a good indicator of the amount of work that will be required in post-editing.
   
-  We provide two figures for WER, both without unknown word marks (``WER''), and with (``WER$_2$''), because of the high number of unknown words identical in source and target (which do not require editing themselves, but may potentially lead to agreement or structural errors elsewhere).
+  In Table \ref{table:quanteval} we provide two figures for WER, both without unknown word marks (``WER''), and with (``WER$_2$''), because of the high number of unknown words identical in source and target (which do not require editing themselves, but may potentially lead to agreement or structural errors elsewhere).
   
   The disparity between the es--an and an--es results can, in large part, be attributed to the looseness of Aragonese standard and, specifically, to different choices of definite articles. The standard permits some variation, such as ``o'' / ``lo''  or ``a'l'' / ``a o'', which is counted as an error of two words.
   
-  \section{Future Work}
+  In addition to WER, we have also evaluated the translator using BLEU~\cite{bleu}. Although BLEU has been shown to favour SMT-based systems over rule-based systems~\cite{burch}, it is something of a de facto standard, and is expected in evaluations. We present the results in Table \ref{table:bleu}. As with WER, we present results both without unknown word marks (``BLEU''), and with (``BLEU$_2$'').
+
+\section{Future Work}
   
   It is intended to continue to develop and maintain the system, to both extend the coverage of the lexicons and to improve the quality of the translations.
   
@@ -160,7 +208,9 @@ To that end, we have begun work on an improved version of the ``stupid aligner''
   
   The list of standardised forms from the analyser has been contributed to an effort to create a spell-checking dictionary for Aragonese\footnote{\url{https://addons.mozilla.org/es-ES/firefox/addon/corrector-ortografico-aragones/}}. We hope that feedback obtained from this collaboration will contribute towards the extension of the system.
 
-  The corpus of sentences from DBpedia requires some further refinement, to be more useful for machine translation. Work has begun on the first stage of this, to create a sentence splitter for Aragonese.
+  The corpus of sentences from DBpedia requires some further refinement, to be more useful for machine translation. Work has begun on the first stage of this, to create a sentence splitter for Aragonese.\footnote{As Apertium operates at phrase level, sentence-level tokenisation was not required by the translator.} Additionally, work has begun on localising the DBpedia extraction software to Aragonese, and the Aragonese Wikipedia. The current abstract extraction relies on interwiki links with the English Wikipedia: we feel that more data could be extracted by comparing direct interwiki links.
+
+  As can be seen in Table~\ref{tab:dbpedia}, the abstracts are not always as similar as the sentences we manually selected (Table~\ref{tab:comp}). SMT techniques have been applied to the task of to finding translated passages in comparable documents~\cite{sanchez-martinez11a}. Lacking sufficient text to train an SMT system, we intend to ``relearn'' our RBMT system~\cite{relearn} to investigate the possibility of using the search for translated passages among the abstracts as a means of removing less comparable abstracts.
 
   Work has also begun on adapting DBpedia Spotlight~\cite{spotlight} to both Spanish and Aragonese, concentrating on two aspects: the lexicalisations data, mapping article titles to the phrases used to link to them within the text of Wikipedia; and the indexes themselves, which we use as source of lexical selection rules, by mapping ambiguous words to their Wikipedia article, where available, and analysing the associated paragraph-level context in the index to find phrase-level context. 
 
